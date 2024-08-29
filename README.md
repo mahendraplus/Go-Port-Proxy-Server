@@ -46,6 +46,9 @@ The `install.sh` script simplifies the installation process by handling environm
    portproxy
    ```
 
+
+## Manually 
+
 1. **Clone the repository:**
 
    ```bash
@@ -59,9 +62,8 @@ The `install.sh` script simplifies the installation process by handling environm
    go build -o portproxy.go
    ```
 
-## Usage
 
-1. **Run the proxy server:**
+3. **Run the proxy server:**
 
    ```bash
    ./portproxy
@@ -69,7 +71,7 @@ The `install.sh` script simplifies the installation process by handling environm
 
    This will start the server on port `2701`.
 
-2. **Access a service running on port `8080` on your local machine by visiting:**
+ **Access a service running on port `8080` on your local machine by visiting:**
 
    ```text
    http://127.0.0.1:2701/8080
