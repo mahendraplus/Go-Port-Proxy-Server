@@ -1,54 +1,60 @@
 package main
 
 import (
-    "log"
-    "net/http"
-    "net/http/httputil"
-    "net/url"
-    "strconv"
-    "strings"
-)
+	"log"
+	"net/http"
+	"net/http/httputil"
+	"net/url"
+	"strings"
+) // I CAN'T SLEEP...... 
 
 func main() {
-    // Create a new HTTP server on port 8022
-    http.HandleFunc("/", proxyHandler)
-    log.Println("Starting server on :2701")
-    err := http.ListenAndServe(":2701", nil)
-    if err != nil {
-        log.Fatalf("ListenAndServe: %v", err)
-    }
+	// Start the proxy server on port 2701
+	http.HandleFunc("/", proxyHandler)
+	log.Println("Starting server on :2701")
+	if err := http.ListenAndServe(":2701", nil); err != nil {
+		log.Fatalf("ListenAndServe: %v", err)
+	}
 }
 
+// proxyHandler handles incoming requests and forwards them to the appropriate port and path
 func proxyHandler(w http.ResponseWriter, r *http.Request) {
-    // Extract the port from the URL path
-    pathParts := strings.Split(strings.Trim(r.URL.Path, "/"), "/")
-    if len(pathParts) == 0 {
-        http.Error(w, "Invalid request path", http.StatusBadRequest)
-        return
-    }
+	// Split the request path to extract the port and the rest of the path
+	pathParts := strings.SplitN(strings.TrimPrefix(r.URL.Path, "/"), "/", 2)
+	if len(pathParts) < 1 {
+		http.Error(w, "Invalid request path", http.StatusBadRequest)
+		return
+	}
 
-    portStr := pathParts[0]
-    port, err := strconv.Atoi(portStr)
-    if err != nil || port < 0 || port > 65535 {
-        http.Error(w, "Invalid port", http.StatusBadRequest)
-        return
-    }
+	// The first part of the path is assumed to be the port number
+	portStr := pathParts[0]
+	restOfPath := "/"
+	if len(pathParts) == 2 {
+		restOfPath = "/" + pathParts[1]
+	}
 
-    // Construct the destination URL
-    targetURL := &url.URL{
-        Scheme: "http",
-        Host:   "127.0.0.1:" + portStr,
-        Path:   "/" + strings.Join(pathParts[1:], "/"),
-    }
+	// Construct the target URL for the reverse proxy
+	targetURL := &url.URL{
+		Scheme: "http",
+		Host:   "127.0.0.1:" + portStr,
+		Path:   restOfPath,
+	}
 
-    // Proxy the request to the target URL
-    proxy := httputil.NewSingleHostReverseProxy(targetURL)
-    proxy.ErrorHandler = func(w http.ResponseWriter, r *http.Request, err error) {
-        log.Printf("proxy error: %v", err)
-        http.Error(w, "Proxy error", http.StatusBadGateway)
-    }
+	log.Printf("Proxying request to %s", targetURL.String())
 
-    r.URL.Path = targetURL.Path
-    r.Host = targetURL.Host
-    proxy.ServeHTTP(w, r)
-} // ⚡😘
+	// Create a reverse proxy to forward the request
+	proxy := httputil.NewSingleHostReverseProxy(targetURL)
+	proxy.Director = func(req *http.Request) {
+		req.URL.Scheme = "http"
+		req.URL.Host = "127.0.0.1:" + portStr
+		req.URL.Path = restOfPath
+		req.Host = req.URL.Host
+	}
+	proxy.ErrorHandler = func(w http.ResponseWriter, r *http.Request, err error) {
+		log.Printf("Proxy error: %v", err)
+		http.Error(w, "Proxy error", http.StatusBadGateway)
+	}
+
+	// Forward the request to the target server
+	proxy.ServeHTTP(w, r)
+}
