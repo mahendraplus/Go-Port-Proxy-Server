@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# Script Header
-# Created by Max
+
+# ©mahendraplus [29/08/2024] (MAX)
 # This script installs Go, builds the Go application from portproxy.go, and moves it to a PATH directory.
 
 # Function to install Go on Linux
@@ -43,7 +43,7 @@ if [ ! -d "portproxy" ]; then
 fi
 
 # Navigate to the repository directory
-cd portproxy || exit
+cd Go-Port-Proxy-Server || exit
 
 # Build the Go application
 echo "Building the Go proxy application..."
