@@ -15,6 +15,37 @@ This Go application sets up a simple HTTP server that listens on port `2701` and
 
 ## Installation
 
+# Auto Installation
+
+The `install.sh` script simplifies the installation process by handling environment detection, Go installation, and building the `portproxy` application. It supports both Linux and Termux environments.
+
+1. **Clone the Repository**
+
+   ```bash
+   git clone https://github.com/mahendraplus/Go-Port-Proxy-Server
+   cd Go-Port-Proxy-Server
+   ```
+
+2. **Run the Installation Script**
+
+   Make the `install.sh` script executable and run it:
+
+   ```bash
+   chmod +x install.sh
+   ./install.sh
+   ```
+
+   - **For Termux:** Installs Go and places the `portproxy` binary in `/data/data/com.termux/files/usr/bin/`.
+   - **For Linux:** Installs Go and places the `portproxy` binary in `/usr/local/bin/`.
+
+3. **Run the Application**
+
+   After installation, you can start the proxy server by simply typing:
+
+   ```bash
+   portproxy
+   ```
+
 1. **Clone the repository:**
 
    ```bash
