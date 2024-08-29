@@ -39,7 +39,7 @@ fi
 # Clone the repository if not already cloned
 if [ ! -d "portproxy" ]; then
     echo "Cloning the Go proxy repository..."
-    git clone https://github.com/yourusername/yourrepository.git portproxy
+    git clone https://github.com/mahendraplus/Go-Port-Proxy-Server
 fi
 
 # Navigate to the repository directory
